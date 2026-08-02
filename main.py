@@ -21,9 +21,14 @@ logger = logging.getLogger(__name__)
 
 
 async def on_startup(app: Application):
-    await db.init_pool()
     await iniciar_health_server(port=int(os.environ.get("PORT", 8080)))
-    logger.info("bot_iniciado")
+    logger.info("health_server_iniciado")
+    try:
+        await db.init_pool()
+        logger.info("db_pool_iniciado")
+    except Exception:
+        logger.exception("db_pool_error")
+        raise
 
 
 async def on_shutdown(app: Application):
