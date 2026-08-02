@@ -1,0 +1,29 @@
+# docker-compose.yml
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: taller_dev
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "15432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgbouncer:
+    image: edoburu/pgbouncer
+    environment:
+      DATABASE_URL: postgresql://dev:dev@db:5432/taller_dev
+      POOL_MODE: transaction
+      AUTH_TYPE: scram-sha-256
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 20
+      LISTEN_PORT: 6432
+    ports:
+      - "6432:6432"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
